@@ -36,6 +36,16 @@ def decode(sequence_of_tokens):
         characters.append(index_to_character[token])
     return characters
 
+class FeedForward(nn.Module):
+    def __init__(self):
+        super(FeedForward, self).__init__()
+        self.linear1 = nn.Linear(embedding_size, 4 * embedding_size)
+        self.linear2 = nn.Linear(4 * embedding_size, embedding_size)
+    def forward(self, x):
+        x = F.relu(self.linear1(x))
+        x = F.relu(self.linear2(x))
+        return x
+
 class Attention(nn.Module):
     def __init__(self):
         super(Attention, self).__init__()
@@ -63,7 +73,7 @@ class Block(nn.Module):
         super(Block, self).__init__()
         self.attention = Attention()
         self.layer_norm_1 = nn.LayerNorm(embedding_size)
-        self.feed_forward = nn.Linear(embedding_size, embedding_size)
+        self.feed_forward = FeedForward()
         self.layer_norm_2 = nn.LayerNorm(embedding_size)
     def forward(self, x):
         x = self.attention(x) + x
